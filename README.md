@@ -17,6 +17,9 @@ events home.
 Running without a sentry dsn seems to work, but curling any of the endpoints when
 it is will hang your terminal.
 
+Per the guidance from `tracing-actix-web`, the stdout will be formatted in json and can be pretty-printed when piped
+through `bunyan`. `cargo install bunyan` is sufficient for log tailing.
+
 To run: 
 
 ```
