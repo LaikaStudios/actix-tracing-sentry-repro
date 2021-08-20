@@ -1,7 +1,11 @@
-FROM docker-registry.laika.com/pt/debian-base:stretch
+FROM debian:stretch as builder
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+    bash \
+    ca-certificates \
+    openssh-client \
+    rsync \
     curl file \
     build-essential \
     libssl-dev \
@@ -13,19 +17,21 @@ RUN apt-get update && \
     autoconf automake autotools-dev libtool xutils-dev && \
     rm -rf /var/lib/apt/lists/*
 
+RUN update-ca-certificates
+
 RUN mkdir -p /rust/cargo /rust/rustup
 
 ENV RUSTUP_HOME=/rust/rustup \
     CARGO_HOME=/rust/cargo
 
-ENV PATH=$CARGO_HOME/bin:$PATH
 
 ARG RUST_TOOLCHAIN=1.54.0
 
 RUN curl https://sh.rustup.rs -sSf | sh -s -- \
   --default-toolchain $RUST_TOOLCHAIN --no-modify-path -y
 
-ENV CARGO_TARGET_DIR=/out
+ENV CARGO_TARGET_DIR=/out \
+    PATH=$CARGO_HOME/bin:$PATH
 
 ADD . /code
 WORKDIR /code
@@ -33,7 +39,7 @@ WORKDIR /code
 RUN cargo build
 
 # Stage 2: Add to a small deploy container
-FROM debian:stretch-slim
+FROM debian:stretch
 
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
