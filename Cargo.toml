@@ -14,4 +14,17 @@ tracing-log = "0.1.2"
 tracing-bunyan-formatter = "0.2.4"
 actix-web-requestid = "1.1"
 sentry-actix = "0.23.0"
-sentry = { version = "0.23.0", features = ["debug-images", "tracing"] }
+
+[dependencies.sentry]
+version = "0.23.0"
+default-features = false
+features = [
+    "backtrace",
+    "contexts",
+    "panic",
+    "reqwest",
+    "rustls",
+    "debug-images",
+    "tracing"
+]
+
